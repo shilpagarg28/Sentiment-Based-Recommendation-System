@@ -397,14 +397,14 @@ word_vectorizer.fit(all_text)
 # In[48]:
 
 
-char_vectorizer = TfidfVectorizer(
-    sublinear_tf=True,
-    strip_accents='unicode',
-    analyzer='char',
-    stop_words='english',
-    ngram_range=(2, 6),
-    max_features=50000)
-char_vectorizer.fit(all_text)
+#char_vectorizer = TfidfVectorizer(
+#    sublinear_tf=True,
+#    strip_accents='unicode',
+#    analyzer='char',
+#    stop_words='english',
+#    ngram_range=(2, 6),
+ #   max_features=50000)
+#char_vectorizer.fit(all_text)
 
 
 # # Getting the top 5 products for user recommendation out of 20
@@ -418,8 +418,9 @@ def getTopItemsFromModel(recommendItems) :
         #print('index: ', id, 'value: ', predRating)
         item_text=df_org.reviews_text[df_org.id == id]
         train_word_features = word_vectorizer.transform(item_text)
-        train_char_features = char_vectorizer.transform(item_text)
-        item_features = hstack([train_char_features, train_word_features])
+        #train_char_features = char_vectorizer.transform(item_text)
+        #item_features = hstack([train_char_features, train_word_features])
+        item_features = train_word_features
         result = sentiment_analysis.predict(item_features)
         #print("Item name",df_org.name[df_org.id == id][0:1])
         #print(len(result))
