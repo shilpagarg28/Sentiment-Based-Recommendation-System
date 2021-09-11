@@ -1,6 +1,6 @@
 import flask
 from flask import Flask, jsonify,  request, render_template
-from SelectedRecommendationSystem import getItemsForUser
+from model import getItemsForUser
 
 # Create the application.
 app = flask.Flask(__name__)
