@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[58]:
 
 
 print("Item Based Recommnedation System")
 
 
-# In[3]:
+# In[59]:
 
 
 #from google.colab import drive
 #drive.mount('/content/gdrive')
 
 
-# In[4]:
+# In[60]:
 
 
 import pandas as pd
@@ -22,7 +22,7 @@ import numpy as np
 import seaborn as sns
 
 
-# In[5]:
+# In[61]:
 
 
 #df_org=pd.read_csv('/content/gdrive/MyDrive/MyCapstone (1)/data/sample30.csv')
@@ -30,89 +30,89 @@ df_org=pd.read_csv('data/sample30.csv')
 df_org.shape
 
 
-# In[6]:
+# In[62]:
 
 
 df = df_org[['id','reviews_username','reviews_rating']]
 
 
-# In[7]:
+# In[63]:
 
 
 df.shape
 
 
-# In[8]:
+# In[64]:
 
 
 df.info()
 
 
-# In[9]:
+# In[65]:
 
 
 df.head()
 
 
-# In[10]:
+# In[66]:
 
 
 df.id.nunique()
 
 
-# In[11]:
+# In[67]:
 
 
 df.reviews_username.nunique()
 
 
-# In[12]:
+# In[68]:
 
 
 df_user = df.dropna()
 
 
-# In[13]:
+# In[69]:
 
 
 df_user.shape
 
 
-# In[14]:
+# In[70]:
 
 
 duplicate = df_user[df_user.duplicated(['reviews_username', 'id'])]
 duplicate
 
 
-# In[15]:
+# In[71]:
 
 
 duplicate = df_user[df_user.duplicated()]
 duplicate
 
 
-# In[16]:
+# In[72]:
 
 
 # Extract duplicate rows
 df_user[(df_user['id']=='AV1YGDqsGV-KLJ3adc-O') & (df_user['reviews_username']=='laura')]        
 
 
-# In[17]:
+# In[73]:
 
 
 # dropping ALL duplicate values
 df_user.drop_duplicates(keep = 'first', inplace = True)
 
 
-# In[18]:
+# In[74]:
 
 
 df_user.shape
 
 
-# In[19]:
+# In[75]:
 
 
 #Getting rows where same user provided different ratings for smae item.
@@ -120,27 +120,27 @@ duplicate = df_user[df_user.duplicated(['reviews_username', 'id'])]
 duplicate
 
 
-# In[20]:
+# In[76]:
 
 
 #Taking mean of different ratings provided by user for same item
 df2 = df_user.groupby(['id','reviews_username']).mean().reset_index()
 
 
-# In[21]:
+# In[77]:
 
 
 df2[(df2['id']=='AV1YGDqsGV-KLJ3adc-O') & (df2['reviews_username']=='laura')]  
 
 
-# In[22]:
+# In[78]:
 
 
 print(df2.shape)
 df2.head()
 
 
-# In[23]:
+# In[79]:
 
 
 # After removing duplicates
@@ -149,7 +149,7 @@ print(df2.reviews_username.nunique())
 print(df2.id.nunique())
 
 
-# In[24]:
+# In[80]:
 
 
 # Pivot the train ratings' dataset into matrix format in which columns are items and the rows are user IDs.
@@ -162,27 +162,27 @@ df_pivot = df2.pivot(
 df_pivot.head(10)
 
 
-# In[25]:
+# In[81]:
 
 
 print(df_pivot.shape)
 
 
-# In[26]:
+# In[82]:
 
 
 # Copy the train dataset into dummy_train
 dummy_df = df2.copy()
 
 
-# In[27]:
+# In[83]:
 
 
 # The items not rated by user is marked as 1 for prediction. 
 dummy_df['reviews_rating'] = dummy_df['reviews_rating'].apply(lambda x: 0 if x>=1 else 1)
 
 
-# In[28]:
+# In[84]:
 
 
 # Convert the dummy train dataset into matrix format.
@@ -193,13 +193,13 @@ dummy_df = dummy_df.pivot(
 ).fillna(1)
 
 
-# In[29]:
+# In[85]:
 
 
 dummy_df.head()
 
 
-# In[30]:
+# In[86]:
 
 
 from sklearn.metrics.pairwise import pairwise_distances
@@ -210,7 +210,7 @@ from sklearn.metrics.pairwise import pairwise_distances
 
 # # Item Based Similarity
 
-# In[31]:
+# In[87]:
 
 
 df_pivot = df2.pivot(
@@ -222,14 +222,14 @@ df_pivot.head()
 
 # Normalising the movie rating for each movie for using the Adujsted Cosine
 
-# In[32]:
+# In[88]:
 
 
 mean = np.nanmean(df_pivot, axis=1)
 df_subtracted = (df_pivot.T-mean).T
 
 
-# In[33]:
+# In[89]:
 
 
 df_subtracted.head()
@@ -243,13 +243,13 @@ df_subtracted.head()
 
 # Finding the cosine similarity using pairwise distances approach
 
-# In[34]:
+# In[90]:
 
 
 from sklearn.metrics.pairwise import pairwise_distances
 
 
-# In[35]:
+# In[91]:
 
 
 # Item Similarity Matrix
@@ -272,7 +272,7 @@ print(item_correlation)
 
 # Filtering the correlation only for which the value is greater than 0. (Positively correlated)
 
-# In[36]:
+# In[92]:
 
 
 item_correlation[item_correlation<0]=0
@@ -287,20 +287,20 @@ item_correlation
 
 # # Prediction - Item Item
 
-# In[37]:
+# In[93]:
 
 
 item_predicted_ratings = np.dot((df_pivot.fillna(0).T),item_correlation)
 item_predicted_ratings
 
 
-# In[38]:
+# In[94]:
 
 
 item_predicted_ratings.shape
 
 
-# In[39]:
+# In[95]:
 
 
 dummy_df.shape
@@ -315,7 +315,7 @@ dummy_df.shape
 # ### Filtering the rating only for the items not rated by the user for recommendation
 # 
 
-# In[40]:
+# In[96]:
 
 
 item_final_rating = np.multiply(item_predicted_ratings,dummy_df)
@@ -332,7 +332,7 @@ item_final_rating.head()
 # 
 # 
 
-# In[41]:
+# In[97]:
 
 
 # Take the user ID as input
@@ -340,7 +340,7 @@ user_input = "laura"
 print(user_input)
 
 
-# In[42]:
+# In[98]:
 
 
 # Recommending the Top 20 products to the user.
@@ -350,7 +350,7 @@ d
 
 # # Loading the saved model from pkl file 
 
-# In[43]:
+# In[99]:
 
 
 # Load the model from the file 
@@ -360,27 +360,27 @@ sentiment_analysis = joblib.load('models/sentiment_analysis.pkl')
 #sentiment_analysis = joblib.load('/content/gdrive/MyDrive/MyCapstone (1)/models/sentiment_analysis.pkl')
 
 
-# In[44]:
+# In[100]:
 
 
 from scipy.sparse import hstack
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-# In[45]:
+# In[101]:
 
 
 ## Replacing NAN values with blank from reviews_title field
 df_org.reviews_title = df_org.reviews_title.fillna('')
 
 
-# In[46]:
+# In[102]:
 
 
 all_text=df_org['reviews_title']+" "+df_org['reviews_text']
 
 
-# In[47]:
+# In[103]:
 
 
 word_vectorizer = TfidfVectorizer(
@@ -394,7 +394,7 @@ word_vectorizer = TfidfVectorizer(
 word_vectorizer.fit(all_text)
 
 
-# In[48]:
+# In[104]:
 
 
 #char_vectorizer = TfidfVectorizer(
@@ -403,13 +403,13 @@ word_vectorizer.fit(all_text)
 #    analyzer='char',
 #    stop_words='english',
 #    ngram_range=(2, 6),
- #   max_features=50000)
+#   max_features=50000)
 #char_vectorizer.fit(all_text)
 
 
 # # Getting the top 5 products for user recommendation out of 20
 
-# In[49]:
+# In[105]:
 
 
 def getTopItemsFromModel(recommendItems) :
@@ -431,7 +431,7 @@ def getTopItemsFromModel(recommendItems) :
   
 
 
-# In[50]:
+# In[106]:
 
 
 def getItemsForUser(userName)  :
@@ -450,7 +450,7 @@ def getItemsForUser(userName)  :
     return(finalList)
 
 
-# In[57]:
+# In[107]:
 
 
 #outputList = getItemsForUser('laura')
